@@ -79,7 +79,7 @@ class BluetoothDeviceService with ReactiveServiceMixin {
   String getAllocationUuid(List<dynamic> allocation) {
     String starter = allocation[1].toString();
 
-    print('Adding : '+ starter + '0000-1000-8000-00805F9B34FB');
+    print('Adding : ' + starter + '0000-1000-8000-00805F9B34FB');
     return (starter + '0000-1000-8000-00805F9B34FB').toLowerCase();
   }
 
@@ -91,12 +91,12 @@ class BluetoothDeviceService with ReactiveServiceMixin {
     return allocation[2];
   }
 
-  String? getNameFromAllocation(String uuid){
+  String? getNameFromAllocation(String uuid) {
     return allocationMap[uuid];
   }
 
   Future<void> searchDevices() async {
-    scanResults = await flutterBlue.startScan(timeout: Duration(seconds: 8));
+    scanResults = await flutterBlue.startScan(timeout: const Duration(seconds: 8));
 
     if (scanResults != null) {
       scanResults!.forEach((scanResult) {

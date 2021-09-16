@@ -4,14 +4,15 @@ import 'package:flutter_sandbox/app/app_router.dart';
 import 'package:flutter_sandbox/app/app_router.gr.dart';
 import 'package:stacked/stacked.dart';
 
-import 'device_view_model.dart';
+import '../bluetooth_view_model.dart';
 
-class BluetoothDevices extends ViewModelWidget<DeviceViewModel> {
+
+class BluetoothDevices extends ViewModelWidget<BluetoothViewModel> {
   @override
-  Widget build(BuildContext context, DeviceViewModel model) {
+  Widget build(BuildContext context, BluetoothViewModel model) {
     return model.isBusy
         ? const Center(
-            child: CircularProgressIndicator(color: Colors.white),
+            child: CircularProgressIndicator(color: Colors.blue),
           )
         : ListView(
             shrinkWrap: true,
@@ -63,7 +64,6 @@ class BluetoothDevices extends ViewModelWidget<DeviceViewModel> {
                         trailing: Text(scanResult.rssi.toString()),
                         onTap: () async {
                           await model.connectToDevice(scanResult.device);
-                          //await model.checkDeviceServices(scanResult.device);
                         },
                       ),
                     );

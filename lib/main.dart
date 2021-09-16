@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_sandbox/app/get_it.dart';
 import 'package:stacked/stacked.dart';
 
 import 'app/app_router.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  configureDependencies();
   runApp(App());
 }
 
