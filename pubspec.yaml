@@ -11,14 +11,18 @@ dependencies:
   flutter:
     sdk: flutter
 
-  auto_route: ^2.3.0
+  auto_route: ^2.3.2
+  csv: ^5.0.0
+  flutter_blue: ^0.8.0
   flutter_portal: ^0.4.0
   gap: ^2.0.0
   get_it: ^7.2.0
   hive: ^2.0.4
   hive_flutter: ^1.1.0
-  injectable: ^1.2.2
-  json_serializable: ^5.0.0
+  injectable: ^1.5.0
+  json_serializable: ^5.0.1
+  mullr_components:
+    path: ../mullr_components
   stacked: ^2.2.5
   stacked_hooks: ^0.2.1
   universal_io: ^2.0.4

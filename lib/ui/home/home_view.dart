@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_sandbox/app/app_router.dart';
+import 'package:flutter_sandbox/app/app_router.gr.dart';
 import 'package:stacked/stacked.dart';
 
 import 'home_view_model.dart';
@@ -14,11 +16,16 @@ class HomeView extends StatelessWidget {
       builder: (context, model, child) {
         return Scaffold(
          appBar: AppBar(
-            title: Text('Title'),
+            title: const Text('Home'),
           ),
-            body: Column(
+            body: ListView(
               children: [
-                Container()
+                ListTile(
+                  title: const Text('Bluetooth'),
+                  onTap: (){
+                    appRouter.push(const BluetoothViewRoute());
+                  },
+                )
               ],
             )
         );
