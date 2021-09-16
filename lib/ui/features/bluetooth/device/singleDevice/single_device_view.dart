@@ -32,12 +32,10 @@ class SingleDeviceView extends StatelessWidget {
                 InfoRow(label: 'Device Name', value: device.name),
                 InfoRow(label: 'Device ID', value: device.id.id),
                 InfoRow(label: 'Device Type', value: device.type.toString()),
-                const ListTile(
+                ListTile(
                   title: Text(
                     'Services',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: Theme.of(context).textTheme.headline5,
                   ),
                 ),
                 ListView.builder(
@@ -49,9 +47,14 @@ class SingleDeviceView extends StatelessWidget {
 
                     return Card(
                       child: ExpansionTile(
-                        subtitle: const Text('Service'),
-                        title: Text(bluetoothDeviceService.getNameFromAllocation(thisService.uuid.toString().toLowerCase()) ??
-                            thisService.uuid.toString().toLowerCase()),
+                        title: Text(
+                          bluetoothDeviceService.getNameFromAllocation(thisService.uuid.toString().toLowerCase()) ??
+                              thisService.uuid.toString().toLowerCase(),
+                        ),
+                        leading: CircleAvatar(
+                          child: Text('S'),
+                          backgroundColor: Colors.red.shade200,
+                        ),
                         children: [
                           CharacteristicButtons(chars: thisService.characteristics),
                         ],
@@ -59,12 +62,10 @@ class SingleDeviceView extends StatelessWidget {
                     );
                   },
                 ),
-                const ListTile(
+                 ListTile(
                   title: Text(
                     'Values',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                    ),
+                    style: Theme.of(context).textTheme.headline5,
                   ),
                 ),
                 ListView.builder(
@@ -101,8 +102,11 @@ class CharacteristicButtons extends StatelessWidget {
     return Column(
       mainAxisSize: MainAxisSize.min,
       children: [
-        const ListTile(
-          title: Text('Characteristics'),
+        ListTile(
+          title: Text(
+            'Characteristics',
+            style: Theme.of(context).textTheme.headline6,
+          ),
         ),
         for (BluetoothCharacteristic char in chars) CharButton(char)
       ],
@@ -119,8 +123,11 @@ class CharButton extends ViewModelWidget<SingleDeviceViewModel> {
   Widget build(BuildContext context, model) {
     print('Encryption required : ' + char.properties.notifyEncryptionRequired.toString());
     return ExpansionTile(
-      subtitle: const Text('Characteristic'),
       title: Text(bluetoothDeviceService.getNameFromAllocation(char.uuid.toString().toLowerCase()) ?? char.uuid.toString().toLowerCase()),
+      leading: CircleAvatar(
+        child: const Text('C'),
+        backgroundColor: Colors.blue.shade200,
+      ),
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 8.0),
@@ -155,6 +162,7 @@ class CharButton extends ViewModelWidget<SingleDeviceViewModel> {
             mainAxisSize: MainAxisSize.min,
             children: [
               ListView.builder(
+                physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
                 itemCount: char.descriptors.length,
                 itemBuilder: (context, index) {
@@ -164,6 +172,9 @@ class CharButton extends ViewModelWidget<SingleDeviceViewModel> {
                     title: Text(bluetoothDeviceService.getNameFromAllocation(descriptor.uuid.toString()) ?? descriptor.uuid.toString()),
                     subtitle: const Text('Descriptor'),
                     onTap: () async {
+
+                    //print('Descriptor: + ${descriptor.toString()}');
+
                       await model.readDescriptor(descriptor);
                     },
                   ));
