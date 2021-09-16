@@ -19,7 +19,7 @@ class InfoRow extends StatelessWidget {
         children: [
           Text(
             label,
-            style: TextStyle(color: Colors.black45),
+            style: Theme.of(context).textTheme.subtitle1,
           ),
           Text(value),
         ],
@@ -27,3 +27,4 @@ class InfoRow extends StatelessWidget {
     );
   }
 }
+
