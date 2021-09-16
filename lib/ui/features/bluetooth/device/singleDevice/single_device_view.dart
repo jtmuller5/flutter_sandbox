@@ -52,7 +52,7 @@ class SingleDeviceView extends StatelessWidget {
                               thisService.uuid.toString().toLowerCase(),
                         ),
                         leading: CircleAvatar(
-                          child: Text('S'),
+                          child: const Text('S'),
                           backgroundColor: Colors.red.shade200,
                         ),
                         children: [
