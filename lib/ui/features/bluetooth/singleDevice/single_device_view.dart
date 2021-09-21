@@ -1,12 +1,12 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/painting.dart';
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_sandbox/services/services.dart';
 import 'package:flutter_sandbox/ui/features/bluetooth/singleDevice/singleDeviceWidgets/info_row.dart';
 import 'package:flutter_sandbox/ui/features/bluetooth/singleDevice/single_device_view_model.dart';
 import 'package:stacked/stacked.dart';
 import 'package:convert/convert.dart';
-
 
 class SingleDeviceView extends StatelessWidget {
   final BluetoothDevice device;
@@ -142,7 +142,19 @@ class CharButton extends ViewModelWidget<SingleDeviceViewModel> {
   Widget build(BuildContext context, model) {
     print('Encryption required : ' + char.properties.notifyEncryptionRequired.toString());
     return ExpansionTile(
-      title: Text(bluetoothDeviceService.getNameFromAllocation(char.uuid.toString().toLowerCase()) ?? char.uuid.toString().toLowerCase()),
+      title: Text(bluetoothDeviceService.getNameFromAllocation(char.uuid.toString().toLowerCase()) ?? char.uuid.toString().toLowerCase(),
+      style: Theme.of(context).textTheme.subtitle1!.copyWith(fontWeight: FontWeight.w600),),
+      subtitle: StreamBuilder<List<int>>(
+        stream: char.value,
+        initialData: char.lastValue,
+        builder: (c, snapshot) => Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(String.fromCharCodes(snapshot.data!.toList())),
+            Text(snapshot.data.toString()),
+          ],
+        )
+      ),
       leading: CircleAvatar(
         child: const Text('C'),
         backgroundColor: Colors.blue.shade200,
@@ -150,69 +162,44 @@ class CharButton extends ViewModelWidget<SingleDeviceViewModel> {
       trailing: Row(
         mainAxisSize: MainAxisSize.min,
         children: <Widget>[
-          if (char.properties.read)IconButton(
-            icon: Icon(
-              Icons.file_download,
-              color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
+          if (char.properties.read)
+            IconButton(
+              icon: Icon(
+                Icons.file_download,
+                color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
+              ),
+              onPressed: () {
+                char.read();
+              },
             ),
-            onPressed: () {
-              char.read();
-            },
-          ),
-          if (char.properties.write) IconButton(
-            icon: Icon(Icons.file_upload, color: Theme.of(context).iconTheme.color?.withOpacity(0.5)),
-            onPressed: () {
-              //char.write(value);
-            },
-          ),
-          if (char.properties.notify) IconButton(
-            icon: Icon(char.isNotifying ? Icons.sync_disabled : Icons.sync, color: Theme.of(context).iconTheme.color?.withOpacity(0.5)),
-            onPressed: () async {
-              await char.setNotifyValue(!char.isNotifying);
+          if (char.properties.write)
+            IconButton(
+              icon: Icon(Icons.file_upload, color: Theme.of(context).iconTheme.color?.withOpacity(0.5)),
+              onPressed: () {
+                //char.write(value);
+              },
+            ),
+          if (char.properties.notify)
+            IconButton(
+              icon: Icon(char.isNotifying ? Icons.sync_disabled : Icons.sync, color: Theme.of(context).iconTheme.color?.withOpacity(0.5)),
+              onPressed: () async {
+                await char.setNotifyValue(!char.isNotifying);
 
-              if(char.isNotifying){
-                char.value.listen((value) {
-                  print('Notifying characteristic value: ' + char.uuid.toString());
-                  print('New value: ' + value.toString());
-                  var result = hex.encode(value);
+                if (char.isNotifying) {
+                  char.value.listen((value) {
+                    print('Notifying characteristic value: ' + char.uuid.toString());
+                    print('New value: ' + value.toString());
+                    var result = hex.encode(value);
 
-                  print('Hex value: ' + result.toString());
-                });
-              }
-              //await char.read();
-            },
-          )
+                    print('Hex value: ' + result.toString());
+                  });
+                }
+                //await char.read();
+              },
+            )
         ],
       ),
       children: [
-        /*Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 8.0),
-          child: Row(
-            children: [
-              if (char.properties.write)
-                ElevatedButton(
-                    onPressed: () {
-                      model.writeCharacteristic(char);
-                    },
-                    child: const Text('Write')),
-              if (char.properties.read)
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                  child: ElevatedButton(
-                      onPressed: () async {
-                        await model.readCharacteristic(char);
-                      },
-                      child: const Text('Read')),
-                ),
-              if (char.properties.notify)
-                ElevatedButton(
-                    onPressed: () async {
-                      await model.notifyCharacteristic(char);
-                    },
-                    child: const Text('Notify')),
-            ],
-          ),
-        ),*/
         Card(
           child: Column(
             mainAxisSize: MainAxisSize.min,
@@ -223,15 +210,45 @@ class CharButton extends ViewModelWidget<SingleDeviceViewModel> {
                 itemCount: char.descriptors.length,
                 itemBuilder: (context, index) {
                   BluetoothDescriptor descriptor = char.descriptors[index];
+
+                  String descriptorType = bluetoothDeviceService.getNameFromAllocation(descriptor.uuid.toString()) ?? descriptor.uuid.toString();
+
                   return Card(
                       child: ListTile(
-                    title: Text(bluetoothDeviceService.getNameFromAllocation(descriptor.uuid.toString()) ?? descriptor.uuid.toString()),
-                    subtitle: const Text('Descriptor'),
+                    title: Text(descriptorType),
+                    subtitle: StreamBuilder<List<int>>(
+                      stream: descriptor.value,
+                      initialData: descriptor.lastValue,
+                      builder: (c, snapshot) => descriptorType == 'Characteristic User Description'
+                          ? Text(String.fromCharCodes(snapshot.data!.toList()))
+                          : Text(snapshot.data.toString()),
+                    ),
                     onTap: () async {
                       //print('Descriptor: + ${descriptor.toString()}');
 
                       await model.readDescriptor(descriptor);
                     },
+                    trailing: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        IconButton(
+                          icon: Icon(
+                            Icons.file_download,
+                            color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
+                          ),
+                          onPressed: () {
+                            descriptor.read();
+                          },
+                        ),
+                        IconButton(
+                          icon: Icon(
+                            Icons.file_upload,
+                            color: Theme.of(context).iconTheme.color?.withOpacity(0.5),
+                          ),
+                          onPressed: () {},
+                        )
+                      ],
+                    ),
                   ));
                 },
               ),
@@ -240,6 +257,5 @@ class CharButton extends ViewModelWidget<SingleDeviceViewModel> {
         )
       ],
     );
-    ;
   }
 }

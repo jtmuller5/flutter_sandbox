@@ -27,7 +27,8 @@ class BluetoothDevices extends ViewModelWidget<BluetoothViewModel> {
                 itemBuilder: (context, index) {
                   BluetoothDevice device = snapshot.data![index];
 
-                  return ConnectedDeviceTile(device);
+                  return ConnectedDeviceTile(device,
+                  key: GlobalObjectKey(device.id.id),);
                 },
                 separatorBuilder: (BuildContext context, int index) {
                   return const Divider();
