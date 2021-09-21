@@ -1,17 +1,18 @@
 import 'package:flutter_blue/flutter_blue.dart';
 import 'package:flutter_sandbox/services/services.dart';
 import 'package:stacked/stacked.dart';
+import 'package:convert/convert.dart';
+
 
 class SingleDeviceViewModel extends ReactiveViewModel {
   final BluetoothDevice device;
-  List<BluetoothService> services = [];
 
   Map<Guid, List<int>> readValues = {};
 
   SingleDeviceViewModel(this.device);
 
   Future<void> initialize() async {
-    services = await device.discoverServices();
+    await device.discoverServices();
     notifyListeners();
   }
 
@@ -37,8 +38,13 @@ class SingleDeviceViewModel extends ReactiveViewModel {
     print('last value: ' + char.lastValue.toString());
 
     char.value.listen((value) {
-      print('Updating characteristic value: ' + char.uuid.toString());
+      print('Notifying characteristic value: ' + char.uuid.toString());
       print('New value: ' + value.toString());
+      var result = hex.encode(value);
+
+      print('Hex value: ' + result.toString());
+      //Uint8List bytes = Uint8List.fromList(value);
+      //print('Byte value: ' + bytes.toString());
       readValues[char.uuid] = value;
       notifyListeners();
     });

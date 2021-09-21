@@ -160,4 +160,21 @@ class BluetoothDeviceService with ReactiveServiceMixin {
   Future<void> getConnectedDevices() async {
     connectedDevices = await flutterBlue.connectedDevices;
   }
+
+  String getNiceManufacturerData(Map<int, List<int>> data) {
+    if (data.isEmpty) {
+      return 'N/A';
+    }
+    List<String> res = [];
+    data.forEach((id, bytes) {
+      res.add(
+          '${id.toRadixString(16).toUpperCase()}: ${getNiceHexArray(bytes)}');
+    });
+    return res.join(', ');
+  }
+
+  String getNiceHexArray(List<int> bytes) {
+    return '[${bytes.map((i) => i.toRadixString(16).padLeft(2, '0')).join(', ')}]'
+        .toUpperCase();
+  }
 }

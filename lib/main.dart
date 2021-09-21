@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_portal/flutter_portal.dart';
 import 'package:flutter_sandbox/app/get_it.dart';
 import 'package:stacked/stacked.dart';
 
@@ -19,9 +20,11 @@ class App extends StatelessWidget {
         //await model.initialise();
       },
       builder: (context, model, child) {
-        return MaterialApp.router(
-          routerDelegate: appRouter.delegate(),
-          routeInformationParser: appRouter.defaultRouteParser(),
+        return Portal(
+          child: MaterialApp.router(
+            routerDelegate: appRouter.delegate(),
+            routeInformationParser: appRouter.defaultRouteParser(),
+          ),
         );
       },
     );
